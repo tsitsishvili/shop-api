@@ -26,8 +26,11 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/products", middlewares.APIKeyMiddleware(shopRepo), productHandler.FindAll)
-	r.POST("/products", middlewares.APIKeyMiddleware(shopRepo), productHandler.Create)
-	r.PUT("/products/:id", middlewares.APIKeyMiddleware(shopRepo), productHandler.Update)
+	protected := r.Group("/")
+	protected.Use(middlewares.APIKeyMiddleware(shopRepo))
+	protected.GET("/products", productHandler.FindAll)
+	protected.POST("/products", productHandler.Create)
+	protected.PUT("/products/:id", productHandler.Update)
+
 	r.Run(":" + os.Getenv("PORT"))
 }
